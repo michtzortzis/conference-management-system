@@ -1,0 +1,65 @@
+services:
+  - type: web
+    name: conference-management-web
+    runtime: docker
+    region: frankfurt
+    plan: free
+    healthCheckPath: /up
+    autoDeployTrigger: commit
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    dockerCommand: ./docker/start-web.sh
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: ASSET_URL
+        sync: false
+      - key: LOG_CHANNEL
+        value: stack
+      - key: LOG_LEVEL
+        value: info
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: conference-management-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: conference-management-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: conference-management-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: conference-management-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: conference-management-db
+          property: password
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: ENABLE_SSR
+        value: "false"
+      - key: RUN_QUEUE_WORKER
+        value: "true"
+
+databases:
+  - name: conference-management-db
+    plan: free
+    region: frankfurt
+    databaseName: conference_management
+    user: conference_management
